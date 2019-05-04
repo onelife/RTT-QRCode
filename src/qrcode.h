@@ -30,38 +30,46 @@
  */
 
 
-#ifndef __QRCODE_H_
-#define __QRCODE_H_
+#ifndef __QRCODE_H__
+#define __QRCODE_H__
 
-#include <stdint.h>
-#include <stdbool.h>
+#include "include/rtthread.h"
+
+#ifdef RT_USING_ULOG
+# define LOG_LVL                    LOG_LVL_DBG
+# define LOG_TAG                    "MO-QR"
+# include "log.h"
+#else /* RT_USING_ULOG */
+# define LOG_E(format, args...)     rt_kprintf(format "\n", ##args)
+# define LOG_W                      LOG_E
+# define LOG_I                      LOG_E
+# define LOG_D                      LOG_E
+#endif /* RT_USING_ULOG */
 
 // QR Code Format Encoding
-#define MODE_NUMERIC        0
-#define MODE_ALPHANUMERIC   1
-#define MODE_BYTE           2
+#define MODE_NUMERIC                0
+#define MODE_ALPHANUMERIC           1
+#define MODE_BYTE                   2
 
 // Error Correction Code Levels
-#define ECC_LOW            0
-#define ECC_MEDIUM         1
-#define ECC_QUARTILE       2
-#define ECC_HIGH           3
-
+#define ECC_LOW                     0
+#define ECC_MEDIUM                  1
+#define ECC_QUARTILE                2
+#define ECC_HIGH                    3
 
 // If set to non-zero, this library can ONLY produce QR codes at that version
 // This saves a lot of dynamic memory, as the codeword tables are skipped
 #ifndef LOCK_VERSION
-#define LOCK_VERSION       0
+#define LOCK_VERSION                0
 #endif
 
-
 typedef struct QRCode {
-    uint8_t version;
-    uint8_t size;
-    uint8_t ecc;
-    uint8_t mode;
-    uint8_t mask;
-    uint8_t *modules;
+    rt_uint8_t version;
+    rt_uint8_t size;
+    rt_uint8_t ecc;
+    rt_uint8_t mode;
+    rt_uint8_t mask;
+    rt_uint8_t *modules;
 } QRCode;
 
 
@@ -69,18 +77,13 @@ typedef struct QRCode {
 extern "C"{
 #endif  /* __cplusplus */
 
-
-
-uint16_t qrcode_getBufferSize(uint8_t version);
-
-int8_t qrcode_initText(QRCode *qrcode, uint8_t *modules, uint8_t version, uint8_t ecc, const char *data);
-int8_t qrcode_initBytes(QRCode *qrcode, uint8_t *modules, uint8_t version, uint8_t ecc, uint8_t *data, uint16_t length);
-
-bool qrcode_getModule(QRCode *qrcode, uint8_t x, uint8_t y);
+rt_uint16_t qrcode_getBufferSize(rt_uint8_t version);
+rt_int8_t qrcode_initText(QRCode *qrcode, rt_uint8_t *modules, rt_uint8_t version, rt_uint8_t ecc, const char *data);
+rt_int8_t qrcode_initBytes(QRCode *qrcode, rt_uint8_t *modules, rt_uint8_t version, rt_uint8_t ecc, rt_uint8_t *data, rt_uint16_t length);
+rt_bool_t qrcode_getModule(QRCode *qrcode, rt_uint8_t x, rt_uint8_t y);
 
 #ifdef __cplusplus
 }
 #endif  /* __cplusplus */
 
-
-#endif  /* __QRCODE_H_ */
+#endif  /* __QRCODE_H__ */
